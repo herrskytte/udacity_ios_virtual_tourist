@@ -52,24 +52,20 @@
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="c4d-2M-1i5">
                         <barButtonItem key="backBarButtonItem" title="OK" id="PmK-Y6-rew"/>
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="JtQ-bq-CTj">
-                            <connections>
-                                <segue destination="XhO-Qs-oys" kind="show" id="UiO-NF-KuI"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="ijB-ps-569" id="XAY-hx-1sU"/>
+                        <segue destination="XhO-Qs-oys" kind="show" identifier="showAlbumSegue" id="wYU-q3-jMH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="864.79999999999995" y="-365.66716641679164"/>
         </scene>
-        <!--View Controller-->
+        <!--Album View Controller-->
         <scene sceneID="V9n-O8-7Wn">
             <objects>
-                <viewController id="XhO-Qs-oys" sceneMemberID="viewController">
+                <viewController id="XhO-Qs-oys" customClass="AlbumViewController" customModule="Virtual_Tourist" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="smM-Rf-Bzz">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -79,6 +75,9 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="140" id="deb-6C-ro5"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="XhO-Qs-oys" id="JtG-0R-6Ls"/>
+                                </connections>
                             </mapView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vyt-VT-8r3">
                                 <rect key="frame" x="0.0" y="623" width="375" height="44"/>
@@ -125,6 +124,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="GUc-mF-Igt"/>
                     </view>
+                    <connections>
+                        <outlet property="mapView" destination="jsZ-MX-5KT" id="tYu-al-w9f"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h1F-q4-Zll" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

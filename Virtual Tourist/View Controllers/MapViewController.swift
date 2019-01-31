@@ -14,6 +14,8 @@ class MapViewController: UIViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     
+    var selectedPin: Pin?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,14 +40,15 @@ class MapViewController: UIViewController {
         do {
             let pins = try dataController.viewContext.fetch(fetchRequest)
             
-            var annotations = [MKPointAnnotation]()
+            var annotations = [CustomPointAnnotation]()
             
             for pin in pins {
                 
                 let lat = CLLocationDegrees(pin.latitude)
                 let lon = CLLocationDegrees(pin.longitude)
                 let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-                let annotation = MKPointAnnotation()
+                let annotation = CustomPointAnnotation()
+                annotation.myPin = pin
                 annotation.coordinate = coordinate
                 annotations.append(annotation)
             }
@@ -81,12 +84,20 @@ class MapViewController: UIViewController {
         // Added pins to MapView.
         self.showLocationPins()
     }
+    
+    // MARK: - Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let vc = segue.destination as? AlbumViewController {
+            vc.currentPin = self.selectedPin
+        }
+    }
 }
 
 extension MapViewController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        guard annotation is MKPointAnnotation else { return nil }
+        guard annotation is CustomPointAnnotation else { return nil }
         
         let identifier = "pin"
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
@@ -99,4 +110,15 @@ extension MapViewController: MKMapViewDelegate {
         
         return annotationView
     }
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        if let customAnnotation = view.annotation as? CustomPointAnnotation {
+            self.selectedPin = customAnnotation.myPin
+            performSegue(withIdentifier: "showAlbumSegue", sender: self)
+        }
+    }
+}
+
+class CustomPointAnnotation : MKPointAnnotation {
+    var myPin:Pin?
 }
