@@ -40,6 +40,7 @@
 		6FE6B1E822031393007BA09D = {
 			isa = PBXGroup;
 			children = (
+				6FE6B1F422031393007BA09D /* AppDelegate.swift */,
 				6FE6B1F322031393007BA09D /* Virtual Tourist */,
 				6FE6B1F222031393007BA09D /* Products */,
 			);
@@ -56,15 +57,46 @@
 		6FE6B1F322031393007BA09D /* Virtual Tourist */ = {
 			isa = PBXGroup;
 			children = (
-				6FE6B1F422031393007BA09D /* AppDelegate.swift */,
-				6FE6B1F622031393007BA09D /* ViewController.swift */,
-				6FE6B1F822031393007BA09D /* Main.storyboard */,
-				6FE6B1FE22031395007BA09D /* Assets.xcassets */,
-				6FE6B20022031395007BA09D /* LaunchScreen.storyboard */,
+				6FE6B20C22031515007BA09D /* Assets */,
+				6FE6B20B22031509007BA09D /* Views */,
+				6FE6B20A22031500007BA09D /* View Controllers */,
+				6FE6B209220314F9007BA09D /* Model */,
 				6FE6B20322031395007BA09D /* Info.plist */,
-				6FE6B1FB22031393007BA09D /* Virtual_Tourist.xcdatamodeld */,
 			);
 			path = "Virtual Tourist";
+			sourceTree = "<group>";
+		};
+		6FE6B209220314F9007BA09D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				6FE6B1FB22031393007BA09D /* Virtual_Tourist.xcdatamodeld */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		6FE6B20A22031500007BA09D /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				6FE6B1F622031393007BA09D /* ViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		6FE6B20B22031509007BA09D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6FE6B1F822031393007BA09D /* Main.storyboard */,
+				6FE6B20022031395007BA09D /* LaunchScreen.storyboard */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6FE6B20C22031515007BA09D /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				6FE6B1FE22031395007BA09D /* Assets.xcassets */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
