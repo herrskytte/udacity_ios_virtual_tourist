@@ -92,21 +92,39 @@
                                 <rect key="frame" x="0.0" y="204" width="375" height="419"/>
                                 <color key="backgroundColor" red="0.56163244770687959" green="0.44018287152354885" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Tmu-2f-IgB">
-                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="itemSize" width="140" height="140"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="sIM-Aq-6C6">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCollectionCell" id="sIM-Aq-6C6" customClass="PhotoCollectionCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="fdQ-wG-9oV">
+                                                    <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
+                                                </imageView>
+                                            </subviews>
                                         </view>
+                                        <constraints>
+                                            <constraint firstItem="fdQ-wG-9oV" firstAttribute="leading" secondItem="sIM-Aq-6C6" secondAttribute="leading" id="BaR-0R-Oed"/>
+                                            <constraint firstAttribute="bottom" secondItem="fdQ-wG-9oV" secondAttribute="bottom" id="Pru-SQ-JxU"/>
+                                            <constraint firstAttribute="trailing" secondItem="fdQ-wG-9oV" secondAttribute="trailing" id="X40-2u-CFh"/>
+                                            <constraint firstItem="fdQ-wG-9oV" firstAttribute="top" secondItem="sIM-Aq-6C6" secondAttribute="top" id="cbg-gM-eg7"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="photoImageView" destination="fdQ-wG-9oV" id="WMI-df-Kxr"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="XhO-Qs-oys" id="TnQ-Ts-K9f"/>
+                                    <outlet property="delegate" destination="XhO-Qs-oys" id="Zq8-Hb-TBe"/>
+                                </connections>
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -125,6 +143,8 @@
                         <viewLayoutGuide key="safeArea" id="GUc-mF-Igt"/>
                     </view>
                     <connections>
+                        <outlet property="collectionFlowLayout" destination="Tmu-2f-IgB" id="tJV-de-y7W"/>
+                        <outlet property="collectionView" destination="bSp-1K-rv9" id="NZg-TM-f4t"/>
                         <outlet property="mapView" destination="jsZ-MX-5KT" id="tYu-al-w9f"/>
                     </connections>
                 </viewController>
