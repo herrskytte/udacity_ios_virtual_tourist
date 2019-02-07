@@ -18,18 +18,21 @@ class AlbumViewController: UIViewController {
     
     @IBOutlet weak var collectionFlowLayout: UICollectionViewFlowLayout!
     
+    @IBOutlet weak var newCollectionButton: UIBarButtonItem!
+    
     var fetchedResultsController:NSFetchedResultsController<Photo>!
     
     /// The pin for the album in this view
     var currentPin: Pin!
     let space:CGFloat = 8.0
     
+    var currentPage = 1
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         showLocationPin()
         setupFetchedResultsController()
-        updateNewCollectionButtonState()
         
         if currentPin.photos?.count == 0 {
             downloadNewPhotoCollection()
@@ -37,16 +40,17 @@ class AlbumViewController: UIViewController {
         
         self.collectionFlowLayout?.minimumInteritemSpacing = space
         self.collectionFlowLayout?.minimumLineSpacing = space
-        
-        let horizontalWidth = UIDevice.current.orientation.isPortrait ?
-            view.frame.size.width : view.frame.size.height
-        
-        updateFlowLayoutProperties(toWidth: horizontalWidth)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        // Check the current width of the app and resize accordingly
+        let horizontalWidth = UIDevice.current.orientation.isPortrait ?
+            view.frame.size.width : view.frame.size.height
+        
+        updateFlowLayoutProperties(toWidth: horizontalWidth)
+        
         setupFetchedResultsController()
     }
     
@@ -59,23 +63,33 @@ class AlbumViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
+        // When swithcing between landscape and portrait get the new width of the app and resize accordingly
         updateFlowLayoutProperties(toWidth: size.width)
     }
     
     func showLocationPin() {
         let coordinate = CLLocationCoordinate2D(latitude: currentPin.latitude, longitude: currentPin.longitude)
+        let region = MKCoordinateRegion(center: coordinate,
+                                        latitudinalMeters: CLLocationDistance(exactly: 5000)!,
+                                        longitudinalMeters: CLLocationDistance(exactly: 5000)!)
         let annotation = MKPointAnnotation()
         annotation.coordinate = coordinate
         self.mapView.removeAnnotations(self.mapView.annotations)
         self.mapView.addAnnotation(annotation)
         self.mapView.setCenter(coordinate, animated: true)
+        self.mapView.setRegion(mapView.regionThatFits(region), animated: true)
+    }
+    
+    @IBAction func newCollectionPressed(_ sender: Any) {
+        self.downloadNewPhotoCollection()
     }
     
     // MARK: Private helper fuctions
-    
     fileprivate func updateFlowLayoutProperties(toWidth width: CGFloat){
+        print("Horizontal width \(width). Is portrait? \(UIDevice.current.orientation.isPortrait)")
+        
         let imagesPerRow: CGFloat = UIDevice.current.orientation.isPortrait ? 3.0 : 4.0
-        let dimension = (width - ((imagesPerRow - 1.0) * self.space)) / imagesPerRow
+        let dimension = (width - ((imagesPerRow + 1.0) * self.space)) / imagesPerRow
         
         print("Setting size for images to \(dimension)")
         self.collectionFlowLayout?.itemSize = CGSize(width: dimension, height: dimension)
@@ -98,6 +112,9 @@ class AlbumViewController: UIViewController {
         }
     }
     
+    // -------------------------------------------------------------------------
+    // MARK: - Calling flickr client
+    
     fileprivate func downloadNewPhotoCollection() {
         if let photos = self.currentPin?.photos {
             for photo in photos {
@@ -105,13 +122,29 @@ class AlbumViewController: UIViewController {
             }
         }
         
-        FlickrClient.getPhotoList(lat: currentPin.latitude, lon: currentPin.longitude, page: 1) {result, error in
+        FlickrClient.getPhotoList(lat: currentPin.latitude, lon: currentPin.longitude, page: currentPage) {result, error in
             print(result ?? "no result")
             print(error  ?? "no error")
-            if let photos = result?.photo {
-                for photoDetails in photos {
-                    self.addPhoto(id: photoDetails.id)
+            if let result = result {
+                if result.pages > self.currentPage {
+                    self.currentPage = self.currentPage + 1
                 }
+
+                for photoDetails in result.photo {
+                    self.addPhoto(id: photoDetails.id)
+                    self.downloadPhoto(photoDetails)
+                }
+            }
+        }
+    }
+    
+    fileprivate func downloadPhoto(_ photoDetails: PhotoDetails) {
+        
+        FlickrClient.getPhotoData(photoDetails) { result, error in
+            print(result ?? "no result")
+            print(error  ?? "no error")
+            if let result = result {
+                self.updatePhoto(id: photoDetails.id, data: result)
             }
         }
     }
@@ -128,6 +161,21 @@ class AlbumViewController: UIViewController {
         try? dataController.viewContext.save()
     }
     
+    // Update photo with image data
+    func updatePhoto(id:String, data: Data) {
+        print("Updating photo id \(id)")
+        if let photos = self.currentPin?.photos {
+            for p in photos {
+                let photo = p as! Photo
+                if photo.flickrId == id {
+                    photo.photoData = data
+                    try? dataController.viewContext.save()
+                    return
+                }
+            }
+        }
+    }
+    
     // Deletes the Photo at the specified index path
     func deletePhoto(at indexPath: IndexPath) {
         let toDelete = fetchedResultsController.object(at: indexPath)
@@ -140,11 +188,8 @@ class AlbumViewController: UIViewController {
         dataController.viewContext.delete(toDelete)
         try? dataController.viewContext.save()
     }
-    
-    func updateNewCollectionButtonState() {
-        //TODO navigationItem.rightBarButtonItem?.isEnabled = fetchedResultsController.sections![0].numberOfObjects > 0
-    }
 }
+
 extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -153,8 +198,6 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        print("Dequeing cell")
-        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionCell", for: indexPath) as! PhotoCollectionCell
         
         let p = fetchedResultsController.object(at: indexPath)

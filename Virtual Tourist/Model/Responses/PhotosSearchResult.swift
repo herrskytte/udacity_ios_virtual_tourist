@@ -35,4 +35,7 @@ struct PhotosSearchDetails: Codable {
 
 struct PhotoDetails: Codable {
     let id: String
+    let secret: String
+    let server: String
+    let farm: Int
 }
